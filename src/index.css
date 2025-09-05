@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: theme(colors.border);
+  }
+  
+  body {
+    background-color: theme(colors.dark.background);
+    color: theme(colors.dark.foreground);
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md;
+  }
+  
+  .btn-secondary {
+    @apply bg-dark-surface hover:bg-dark-surface/80 text-dark-foreground px-6 py-3 rounded-lg font-medium transition-all duration-200 border;
+    border-color: theme(colors.dark.border);
+  }
+  
+  .card {
+    @apply bg-dark-surface rounded-lg p-6 shadow-card border;
+    border-color: theme(colors.dark.border);
+  }
+  
+  .glass-card {
+    @apply backdrop-blur-sm bg-dark-surface/50 rounded-lg p-6 border;
+    border-color: theme(colors.dark.border);
+  }
+}
