@@ -4,12 +4,21 @@ import Dashboard from './components/Dashboard'
 import CourseModule from './components/CourseModule'
 import Simulation from './components/Simulation'
 import StrategyBuilder from './components/StrategyBuilder'
-import { useUserProgress } from './hooks/useUserProgress'
+import SubscriptionModal from './components/SubscriptionModal'
+import useStore from './store/useStore'
 
 function App() {
-  const [currentView, setCurrentView] = useState('dashboard')
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const { userProgress, updateProgress } = useUserProgress()
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false)
+  
+  // Store state
+  const currentView = useStore(state => state.ui.currentView)
+  const selectedCourse = useStore(state => state.ui.selectedCourse)
+  const user = useStore(state => state.user)
+  const progress = useStore(state => state.progress)
+  
+  // Store actions
+  const setCurrentView = useStore(state => state.setCurrentView)
+  const setSelectedCourse = useStore(state => state.setSelectedCourse)
 
   const renderCurrentView = () => {
     switch (currentView) {
@@ -17,8 +26,6 @@ function App() {
         return (
           <CourseModule 
             course={selectedCourse}
-            userProgress={userProgress}
-            onProgress={updateProgress}
             onBack={() => setCurrentView('dashboard')}
           />
         )
@@ -37,13 +44,13 @@ function App() {
       default:
         return (
           <Dashboard 
-            userProgress={userProgress}
             onSelectCourse={(course) => {
               setSelectedCourse(course)
               setCurrentView('course')
             }}
             onStartSimulation={() => setCurrentView('simulation')}
             onOpenStrategy={() => setCurrentView('strategy')}
+            onShowSubscription={() => setShowSubscriptionModal(true)}
           />
         )
     }
@@ -54,11 +61,17 @@ function App() {
       <Header 
         currentView={currentView}
         onNavigate={setCurrentView}
-        userProgress={userProgress}
+        onShowSubscription={() => setShowSubscriptionModal(true)}
       />
       <main className="pt-16">
         {renderCurrentView()}
       </main>
+      
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        currentTier={user.subscriptionTier}
+      />
     </div>
   )
 }

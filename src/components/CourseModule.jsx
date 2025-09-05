@@ -1,21 +1,39 @@
 import React, { useState } from 'react'
-import { ArrowLeft, Play, CheckCircle, BookOpen, Award } from 'lucide-react'
+import { ArrowLeft, Play, CheckCircle, BookOpen, Award, Brain } from 'lucide-react'
+import Quiz from './Quiz'
+import useStore from '../store/useStore'
 
-const CourseModule = ({ course, userProgress, onProgress, onBack }) => {
+const CourseModule = ({ course, onBack }) => {
   const [currentModule, setCurrentModule] = useState(0)
-  const [moduleProgress, setModuleProgress] = useState({})
+  const [showQuiz, setShowQuiz] = useState(false)
+  
+  const progress = useStore(state => state.progress)
+  const completeModule = useStore(state => state.completeModule)
+  const completeCourse = useStore(state => state.completeCourse)
+  
+  const handleCompleteModule = (moduleIndex, quizScore = 0) => {
+    const module = course.modules[moduleIndex]
+    completeModule(course.courseId, module.moduleId, quizScore)
+    
+    // Check if all modules are completed
+    const completedModules = course.modules.filter(m => 
+      progress.completedModules.includes(m.moduleId)
+    ).length + 1 // +1 for the current module being completed
+    
+    if (completedModules === course.modules.length) {
+      completeCourse(course.courseId)
+    }
+  }
 
-  const completeModule = (moduleIndex) => {
-    const newProgress = { ...moduleProgress, [moduleIndex]: true }
-    setModuleProgress(newProgress)
+  const handleQuizComplete = (score) => {
+    handleCompleteModule(currentModule, score)
+    setShowQuiz(false)
     
-    // Award experience points
-    onProgress('addExp', 50)
-    
-    // If all modules completed, mark course as complete
-    const completedCount = Object.keys(newProgress).length
-    if (completedCount === course.modules.length) {
-      onProgress('completeCourse', course.courseId)
+    // Move to next module or back to dashboard
+    if (currentModule < course.modules.length - 1) {
+      setCurrentModule(prev => prev + 1)
+    } else {
+      onBack()
     }
   }
 
@@ -44,7 +62,7 @@ const CourseModule = ({ course, userProgress, onProgress, onBack }) => {
           <div className="text-right">
             <div className="text-sm text-gray-400 mb-1">Progress</div>
             <div className="text-lg font-semibold text-dark-foreground">
-              {Object.keys(moduleProgress).length}/{course.modules.length}
+              {course.modules.filter(m => progress.completedModules.includes(m.moduleId)).length}/{course.modules.length}
             </div>
           </div>
         </div>
@@ -52,7 +70,7 @@ const CourseModule = ({ course, userProgress, onProgress, onBack }) => {
         <div className="w-full bg-dark-background rounded-full h-2">
           <div 
             className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(Object.keys(moduleProgress).length / course.modules.length) * 100}%` }}
+            style={{ width: `${(course.modules.filter(m => progress.completedModules.includes(m.moduleId)).length / course.modules.length) * 100}%` }}
           />
         </div>
       </div>
@@ -74,7 +92,7 @@ const CourseModule = ({ course, userProgress, onProgress, onBack }) => {
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    {moduleProgress[index] ? (
+                    {progress.completedModules.includes(mod.moduleId) ? (
                       <CheckCircle className="w-4 h-4 text-green-500" />
                     ) : (
                       <div className={`w-4 h-4 rounded-full border-2 ${
@@ -94,7 +112,7 @@ const CourseModule = ({ course, userProgress, onProgress, onBack }) => {
           <div className="card">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-dark-foreground">{module.title}</h2>
-              {moduleProgress[currentModule] && (
+              {progress.completedModules.includes(module.moduleId) && (
                 <div className="flex items-center space-x-2 text-green-500">
                   <CheckCircle className="w-5 h-5" />
                   <span className="text-sm font-medium">Completed</span>
@@ -151,25 +169,27 @@ const CourseModule = ({ course, userProgress, onProgress, onBack }) => {
             </div>
 
             {/* Interactive Quiz */}
-            <div className="bg-dark-background p-6 rounded-lg mb-6">
-              <h3 className="text-lg font-semibold text-dark-foreground mb-4">Quick Quiz</h3>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-gray-300 mb-3">What happens when there are more buyers than sellers in the market?</p>
-                  <div className="space-y-2">
-                    <button className="w-full text-left p-3 rounded bg-dark-surface hover:bg-primary/20 transition-colors text-gray-300">
-                      A) Prices go down
-                    </button>
-                    <button className="w-full text-left p-3 rounded bg-primary/20 border border-primary text-primary transition-colors">
-                      B) Prices go up ✓
-                    </button>
-                    <button className="w-full text-left p-3 rounded bg-dark-surface hover:bg-primary/20 transition-colors text-gray-300">
-                      C) Prices stay the same
-                    </button>
+            {module.quiz && (
+              <div className="bg-dark-background p-6 rounded-lg mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-dark-foreground">Knowledge Check</h3>
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <Brain className="w-4 h-4" />
+                    <span>{module.quiz.questions.length} questions</span>
                   </div>
                 </div>
+                <p className="text-gray-400 mb-4">
+                  Test your understanding of this module with a quick quiz.
+                </p>
+                <button
+                  onClick={() => setShowQuiz(true)}
+                  className="btn-primary flex items-center gap-2"
+                >
+                  <Brain className="w-4 h-4" />
+                  Start Quiz
+                </button>
               </div>
-            </div>
+            )}
 
             {/* Module Actions */}
             <div className="flex items-center justify-between pt-6 border-t border-dark-border">
@@ -190,19 +210,40 @@ const CourseModule = ({ course, userProgress, onProgress, onBack }) => {
                 </button>
               </div>
 
-              {!moduleProgress[currentModule] && (
-                <button
-                  onClick={() => completeModule(currentModule)}
-                  className="flex items-center space-x-2 btn-primary"
-                >
-                  <Award className="w-4 h-4" />
-                  <span>Complete Module (+50 XP)</span>
-                </button>
+              {!progress.completedModules.includes(module.moduleId) && (
+                <div className="flex gap-3">
+                  {module.quiz ? (
+                    <button
+                      onClick={() => setShowQuiz(true)}
+                      className="flex items-center space-x-2 btn-primary"
+                    >
+                      <Brain className="w-4 h-4" />
+                      <span>Take Quiz to Complete</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleCompleteModule(currentModule)}
+                      className="flex items-center space-x-2 btn-primary"
+                    >
+                      <Award className="w-4 h-4" />
+                      <span>Complete Module (+50 XP)</span>
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Quiz Modal */}
+      {showQuiz && module.quiz && (
+        <Quiz
+          quiz={module.quiz}
+          onComplete={handleQuizComplete}
+          onClose={() => setShowQuiz(false)}
+        />
+      )}
     </div>
   )
 }
