@@ -6,24 +6,85 @@ export const mockCourses = [
     duration: '45 min',
     enrolled: '2.1k',
     difficulty: 'Beginner',
+    requiredTier: 'free',
     modules: [
       {
         moduleId: 'module-1-1',
         title: 'Market Basics & Structure',
         content: 'Understanding how markets work and basic terminology',
-        duration: '15 min'
+        duration: '15 min',
+        quiz: {
+          questions: [
+            {
+              id: 'q1-1',
+              question: 'What is a stock market?',
+              options: [
+                'A place where stocks are bought and sold',
+                'A grocery store for stocks',
+                'A bank for companies',
+                'A government building'
+              ],
+              correct: 0,
+              explanation: 'A stock market is a marketplace where shares of publicly traded companies are bought and sold.'
+            },
+            {
+              id: 'q1-2',
+              question: 'What does "bid" mean in trading?',
+              options: [
+                'The highest price a buyer is willing to pay',
+                'The lowest price a seller will accept',
+                'The current market price',
+                'The opening price'
+              ],
+              correct: 0,
+              explanation: 'The bid is the highest price that a buyer is willing to pay for a security at a given time.'
+            }
+          ]
+        }
       },
       {
         moduleId: 'module-1-2',
         title: 'Order Types & Execution',
         content: 'Different types of orders and how they work',
-        duration: '15 min'
+        duration: '15 min',
+        quiz: {
+          questions: [
+            {
+              id: 'q2-1',
+              question: 'What is a market order?',
+              options: [
+                'An order to buy or sell immediately at the current market price',
+                'An order to buy or sell at a specific price',
+                'An order that expires at the end of the day',
+                'An order to buy low and sell high'
+              ],
+              correct: 0,
+              explanation: 'A market order is executed immediately at the current market price.'
+            }
+          ]
+        }
       },
       {
         moduleId: 'module-1-3',
         title: 'Reading Charts',
         content: 'Basic chart patterns and candlestick analysis',
-        duration: '15 min'
+        duration: '15 min',
+        quiz: {
+          questions: [
+            {
+              id: 'q3-1',
+              question: 'What does a green candlestick represent?',
+              options: [
+                'Price went up during that period',
+                'Price went down during that period',
+                'No price movement',
+                'High trading volume'
+              ],
+              correct: 0,
+              explanation: 'A green (or white) candlestick indicates that the closing price was higher than the opening price.'
+            }
+          ]
+        }
       }
     ]
   },
@@ -34,6 +95,7 @@ export const mockCourses = [
     duration: '60 min',
     enrolled: '1.8k',
     difficulty: 'Beginner',
+    requiredTier: 'starter',
     modules: [
       {
         moduleId: 'module-2-1',
@@ -62,6 +124,7 @@ export const mockCourses = [
     duration: '90 min',
     enrolled: '1.5k',
     difficulty: 'Intermediate',
+    requiredTier: 'starter',
     modules: [
       {
         moduleId: 'module-3-1',
@@ -90,6 +153,7 @@ export const mockCourses = [
     duration: '75 min',
     enrolled: '1.2k',
     difficulty: 'Advanced',
+    requiredTier: 'pro',
     modules: [
       {
         moduleId: 'module-4-1',
@@ -118,6 +182,7 @@ export const mockCourses = [
     duration: '50 min',
     enrolled: '1.9k',
     difficulty: 'Intermediate',
+    requiredTier: 'starter',
     modules: [
       {
         moduleId: 'module-5-1',
@@ -146,6 +211,7 @@ export const mockCourses = [
     duration: '120 min',
     enrolled: '950',
     difficulty: 'Advanced',
+    requiredTier: 'elite',
     modules: [
       {
         moduleId: 'module-6-1',
@@ -182,18 +248,96 @@ export const mockStrategies = [
     strategyId: 'strategy-1',
     name: 'Momentum Breakout',
     description: 'Buy when price breaks above resistance with volume',
-    performance: { return: 15.7, winRate: 68.3, maxDrawdown: -8.2 }
+    performance: { return: 15.7, winRate: 68.3, maxDrawdown: -8.2 },
+    requiredTier: 'starter'
   },
   {
     strategyId: 'strategy-2',
     name: 'Mean Reversion',
     description: 'Buy oversold conditions, sell overbought',
-    performance: { return: 12.4, winRate: 72.1, maxDrawdown: -6.5 }
+    performance: { return: 12.4, winRate: 72.1, maxDrawdown: -6.5 },
+    requiredTier: 'starter'
   },
   {
     strategyId: 'strategy-3',
     name: 'Trend Following',
     description: 'Follow the trend with moving average signals',
-    performance: { return: 18.9, winRate: 58.7, maxDrawdown: -12.1 }
+    performance: { return: 18.9, winRate: 58.7, maxDrawdown: -12.1 },
+    requiredTier: 'pro'
+  }
+]
+
+export const mockAchievements = {
+  'first-course': {
+    id: 'first-course',
+    title: 'First Steps',
+    description: 'Complete your first course',
+    icon: '🎓',
+    xpReward: 50
+  },
+  'first-trade': {
+    id: 'first-trade',
+    title: 'First Trade',
+    description: 'Execute your first simulated trade',
+    icon: '💰',
+    xpReward: 25
+  },
+  'week-streak': {
+    id: 'week-streak',
+    title: 'Week Warrior',
+    description: 'Learn for 7 days in a row',
+    icon: '🔥',
+    xpReward: 100
+  },
+  'quiz-master': {
+    id: 'quiz-master',
+    title: 'Quiz Master',
+    description: 'Score 90% or higher on 5 quizzes',
+    icon: '🧠',
+    xpReward: 75
+  },
+  'strategy-builder': {
+    id: 'strategy-builder',
+    title: 'Strategy Builder',
+    description: 'Create your first trading strategy',
+    icon: '⚡',
+    xpReward: 100
+  },
+  'profit-maker': {
+    id: 'profit-maker',
+    title: 'Profit Maker',
+    description: 'Achieve 10% profit in simulation',
+    icon: '📈',
+    xpReward: 150
+  }
+}
+
+export const mockSimulationScenarios = [
+  {
+    scenarioId: 'scenario-1',
+    title: 'Bull Market Rally',
+    description: 'Navigate a strong upward trending market',
+    difficulty: 'Beginner',
+    duration: '30 min',
+    initialBalance: 10000,
+    marketCondition: 'bullish'
+  },
+  {
+    scenarioId: 'scenario-2',
+    title: 'Market Correction',
+    description: 'Handle a 15% market downturn',
+    difficulty: 'Intermediate',
+    duration: '45 min',
+    initialBalance: 10000,
+    marketCondition: 'bearish'
+  },
+  {
+    scenarioId: 'scenario-3',
+    title: 'Volatile Sideways',
+    description: 'Trade in a choppy, sideways market',
+    difficulty: 'Advanced',
+    duration: '60 min',
+    initialBalance: 10000,
+    marketCondition: 'sideways'
   }
 ]
